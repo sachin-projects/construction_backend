@@ -18,6 +18,11 @@ Route ::group(['middleware'=>['auth:sanctum']], function(){
     //Services Routes
     Route::post('services', [ServiceController::class, 'store']);
     Route::get('services', [ServiceController::class, 'index']);
+    Route::put('services/{id}', [ServiceController::class, 'update']);
+    Route::get('services/{id}', [ServiceController::class, 'show']);
+    Route::delete('services/{id}', [ServiceController::class, 'destroy']);
+
+    
 
     //Temp images
     Route::post('temp-images', [TempImageController::class, 'store']);

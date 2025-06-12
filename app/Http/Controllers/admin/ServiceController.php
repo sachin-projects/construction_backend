@@ -7,6 +7,7 @@ use App\Models\Service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
 
 class ServiceController extends Controller
 {
@@ -53,6 +54,7 @@ class ServiceController extends Controller
         $model->short_desc = $request->short_desc;
         $model->content = $request->content;
         $model->status = $request->status;
+        $model->image = $request->image;
         $model->save();
 
         return response()->json([
@@ -64,9 +66,24 @@ class ServiceController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Service $service)
+    public function show($id)
     {
-        //
+        //$service = Service::find($id);
+
+        $service = DB::select("SELECT *, (SELECT name FROM temp_images WHERE id = services.image) AS image FROM services WHERE id = $id");
+
+        if($service == null){
+            return response()->json([
+                'status'=>false,
+                'message'=>'Service not found',
+            ]);        
+        }
+
+        return response()->json([
+            'status'=>true,
+            'data'=>$service
+        ]);    
+        
     }
 
     /**
@@ -80,16 +97,61 @@ class ServiceController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Service $service)
+    public function update(Request $request, $id)
     {
-        //
+        $service = Service::find($id);
+
+        if($service == null){
+            return response()->json([
+                'status'=>false,
+                'message'=>'Service not found',
+            ]);        
+        }
+
+        $validator = Validator::make($request->all(),[
+            'title'=>'required',
+            'slug'=>'required|unique:services,slug,'.$id.',id',
+        ]);
+
+        if($validator->fails()){
+            return response()->json([
+                'status'=>false,
+                'error'=>$validator->errors(),
+            ]);
+        }
+
+        $service->title = $request->title;
+        $service->slug = Str::slug($request->slug);
+        $service->short_desc = $request->short_desc;
+        $service->content = $request->content;
+        $service->status = $request->status;
+        $service->save();
+
+        return response()->json([
+            'status'=>true,
+            'message'=>'Service updated successfully',
+        ]);        //
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Service $service)
+    public function destroy($id)
     {
-        //
+        $service = Service::find($id);
+
+        if($service == null){
+            return response()->json([
+                'status'=>false,
+                'message'=>'Service not found',
+            ]);        
+        }
+
+        $service->delete();
+
+        return response()->json([
+            'status'=>true,
+            'message'=>'Service deleted successfully'
+        ]);  
     }
 }
