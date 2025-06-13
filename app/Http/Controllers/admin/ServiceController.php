@@ -123,6 +123,7 @@ class ServiceController extends Controller
         $service->title = $request->title;
         $service->slug = Str::slug($request->slug);
         $service->short_desc = $request->short_desc;
+        $service->image=$request->image;
         $service->content = $request->content;
         $service->status = $request->status;
         $service->save();
