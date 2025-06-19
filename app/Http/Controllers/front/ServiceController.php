@@ -15,16 +15,20 @@ class ServiceController extends Controller
         $services = DB::table('services')
         ->join('temp_images', 'services.image', '=', 'temp_images.id')
         ->select('services.*', 'temp_images.name as image_name')
+        ->orderBy('services.id', 'desc')
         ->get();
 
         return $services;
     }
 
     public function latestServices(Request $request){
-        $services = Service::where('status',1)
-        ->orderBy('created_at','desc')
+        $services = DB::table('services')
+        ->join('temp_images', 'services.image', '=', 'temp_images.id')
+        ->select('services.*', 'temp_images.name as image_name')
+        ->orderBy('services.id', 'desc')
         ->take($request->get('limit'))
         ->get();
+
         return $services;
     }
 }
