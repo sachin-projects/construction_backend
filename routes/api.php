@@ -5,7 +5,7 @@ use App\Http\Controllers\AuthenticationController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\admin\ServiceController;
-use App\Http\Controllers\admin\TempImageController;
+use App\Http\Controllers\admin\ProjectController;
 use App\Http\Controllers\front\ServiceController as FrontServiceController;
 
 
@@ -25,7 +25,9 @@ Route ::group(['middleware'=>['auth:sanctum']], function(){
     Route::get('services/{id}', [ServiceController::class, 'show']);
     Route::delete('services/{id}', [ServiceController::class, 'destroy']);
 
-    
+    //Project Routes
+    Route::post('projects', [ProjectController::class, 'store']);
+    Route::get('projects', [ProjectController::class, 'index']);
 
     //Temp images
     Route::post('temp-images', [TempImageController::class, 'store']);
