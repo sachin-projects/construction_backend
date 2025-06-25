@@ -52,5 +52,83 @@ class ProjectController extends Controller
             'message'=>'Project Added successfully',
         ]);
     }
+
+    public function update($id, Request $request) {
+       $project = Project::find($id);
+       
+       if($project==null) {
+        return response()->json([
+            'status'=>false,
+            'message'=>'Project Not found',
+        ]);          
+       }
+
+       $validate = Validator::make($request->all(),[
+        'title'=>'required',
+        'slug'=>'required|unique:projects,slug,'.$id.',id',
+    ]);
+
+
+
+    if($validate->fails()){
+        return response()->json([
+            'status'=>false,
+            'errors'=>$validate->errors()
+        ]);
+    }
+
+    $project->title = $request->title;
+    // $project->slug = Str::slug($request->slug);
+    $project->slug = make_slug($request->slug);
+    $project->short_desc = $request->short_desc;
+    $project->content = $request->content;
+    $project->construction_type = $request->construction_type;
+    $project->sector = $request->sector;
+    $project->location = $request->location;
+    $project->image = $request->image;
+    $project->status = $request->status;
+    $project->save();
+
+    return response()->json([
+        'status'=>true,
+        'message'=>'Project Updated successfully',
+    ]);        
+    }
+
+    public function show($id) {
+        $project = Project::find($id);
+
+        if($project==null) {
+            return response()->json([
+                'status'=>false,
+                'message'=>'Project Not found',
+            ]);          
+           }
+
+           return response()->json([
+            'status'=>true,
+            'data'=>$project
+           ]);
+
+    }
+
+    public function destroy($id)
+    {
+        $project = Project::find($id);
+
+        if($project==null) {
+            return response()->json([
+                'status'=>false,
+                'message'=>'Project Not found',
+            ]);          
+           }
+
+           $project->delete();
+
+           return response()->json([
+            'status'=>true,
+            'message'=>'Project Deleted successfully',
+           ]);
+    }
  
 }
